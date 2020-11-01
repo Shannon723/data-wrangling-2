@@ -6,12 +6,9 @@ output: github_document
 ---
 
 ```{r setup, include=FALSE}
+library(tidyverse)
 library(rvest)
 library(p8105.datasets)
-
-scale_color_discrete=scale_color_viridis_d
-sclae_fill_discrete = scale_fill_viridis_d
-
 ```
 
 
@@ -113,8 +110,88 @@ as.numeric(vec_sex)
 
 ````
 
-## NSDUH
+## NSDUH - strings
+
+```{r}
+url = "http://samhda.s3-us-gov-west-1.amazonaws.com/s3fs-public/field-uploads/2k15StateFiles/NSDUHsaeShortTermCHG2015.htm"
+drug_use_html = read_html(url)
 
 
+table_mar = 
+  read_html(url) %>%
+  html_nodes(css = "table") %>%
+  first() %>%
+  html_table %>%
+  slice(-1) %>%
+  as_tibble()
 
+table_mar
+```
+
+1. Remove P-value column
+2. pivot: except for the State column, make pivot
+3. age_year; separate age and years by open parenthesis ("\\(")
+4. year: remove close parenthesis by replacing with nothing ""
+5. percent; remove letter by replacing with nothing "", then change it as numeric. 
+6. filter state (not Total U.S. Northeast, Midwest, South, or West)
+
+```{r}
+data_mar=
+  table_mar %>%
+  select(-contains("P value")) %>%
+  pivot_longer(
+    -State,
+    names_to = "age_year",
+    values_to =  "percent"
+  ) %>%
+  separate(age_year, into = c("age", "year"), sep="\\(")%>%
+  mutate(
+    year = str_replace(year, "\\)", ""),
+    percent = str_replace(percent, "[a-c]$", ""),
+    percent = as.numeric(percent)
+  ) %>% 
+  filter(!(State%in% c("Total U.S.", "Northeast", "Midwest", "South", "West")))
+
+data_mar
+```
+
+
+## NSDUH - factors
+
+```{r}
+data_mar  %>%
+  filter(age=="12-17")
+
+```
+
+Make a plot x=state, y=percent, color = year
+* State is character; alphabetical order when plotting
+
+```{r}
+data_mar  %>%
+  filter(age=="12-17") %>%
+  ggplot(aes(State,y=percent,color=year)) +
+  geom_point() + theme(axis.text.x=element_text(angle = 90, vjust = 0.5, hjust=1))
+
+```
+
+Let's change State into factor 
+1. fct_relevel; with Texas as the very first one. 
+2. fct_reorder; in order of percent ranking (from lowest to highest)
+
+```{r}
+data_mar  %>%
+  filter(age=="12-17") %>%
+  mutate(State= fct_relevel(State, "Texas")) %>%
+  ggplot(aes(State,y=percent,color=year)) +
+  geom_point() + theme(axis.text.x=element_text(angle = 90, vjust = 0.5, hjust=1))
+
+data_mar  %>%
+  filter(age=="12-17") %>%
+  mutate(State= fct_reorder(State, percent)) %>%
+  ggplot(aes(State,y=percent,color=year)) +
+  geom_point() + theme(axis.text.x=element_text(angle = 90, vjust = 0.5, hjust=1))
+
+
+```
 

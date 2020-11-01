@@ -252,3 +252,61 @@ data_mar
     ##  9 Alabama 18+   2013-2014    9.99
     ## 10 Alabama 18+   2014-2015    9.59
     ## # … with 500 more rows
+
+## NSDUH - factors
+
+``` r
+data_mar  %>%
+  filter(age=="12-17")
+```
+
+    ## # A tibble: 102 x 4
+    ##    State      age   year      percent
+    ##    <chr>      <chr> <chr>       <dbl>
+    ##  1 Alabama    12-17 2013-2014    9.9 
+    ##  2 Alabama    12-17 2014-2015    9.71
+    ##  3 Alaska     12-17 2013-2014   17.3 
+    ##  4 Alaska     12-17 2014-2015   18.4 
+    ##  5 Arizona    12-17 2013-2014   15.1 
+    ##  6 Arizona    12-17 2014-2015   13.4 
+    ##  7 Arkansas   12-17 2013-2014   12.8 
+    ##  8 Arkansas   12-17 2014-2015   12.1 
+    ##  9 California 12-17 2013-2014   15.0 
+    ## 10 California 12-17 2014-2015   14.1 
+    ## # … with 92 more rows
+
+Make a plot x=state, y=percent, color = year \* State is character;
+alphabetical order when plotting
+
+``` r
+data_mar  %>%
+  filter(age=="12-17") %>%
+  ggplot(aes(State,y=percent,color=year)) +
+  geom_point() + theme(axis.text.x=element_text(angle = 90, vjust = 0.5, hjust=1))
+```
+
+![](strings-and-factors_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
+
+Let’s change State into factor 1. fct\_relevel; with Texas as the very
+first one. 2. fct\_reorder; in order of percent ranking (from lowest to
+highest)
+
+``` r
+data_mar  %>%
+  filter(age=="12-17") %>%
+  mutate(State= fct_relevel(State, "Texas")) %>%
+  ggplot(aes(State,y=percent,color=year)) +
+  geom_point() + theme(axis.text.x=element_text(angle = 90, vjust = 0.5, hjust=1))
+```
+
+![](strings-and-factors_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
+
+``` r
+data_mar  %>%
+  filter(age=="12-17") %>%
+  mutate(State= fct_reorder(State, percent)) %>%
+  ggplot(aes(State,y=percent,color=year)) +
+  geom_point() + theme(axis.text.x=element_text(angle = 90, vjust = 0.5, hjust=1))
+```
+
+![](strings-and-factors_files/figure-gfm/unnamed-chunk-13-2.png)<!-- -->
