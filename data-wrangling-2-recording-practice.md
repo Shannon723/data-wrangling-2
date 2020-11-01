@@ -96,8 +96,12 @@ swm_df =
 
 ## Get some water data
 
-This is coming from an API; if we can use csv, always use csv first. If
-not, use Jason, but more work to do.
+1.  This is coming from an API; if we can use csv, always use csv first.
+    If not, use Jason, but more work to do.
+
+2.  content(“parsed”) make a tibble.
+
+<!-- end list -->
 
 ``` r
 nyc_water = 
@@ -120,3 +124,62 @@ nyc_water =
   jsonlite::fromJSON() %>%
   as_tibble()
 ```
+
+## BRFSS
+
+Same process, different data
+
+``` r
+brfss_2010 = 
+  GET("https://chronicdata.cdc.gov/resource/acme-vg9e.csv") %>%
+  content("parsed")
+```
+
+    ## Parsed with column specification:
+    ## cols(
+    ##   .default = col_character(),
+    ##   year = col_double(),
+    ##   sample_size = col_double(),
+    ##   data_value = col_double(),
+    ##   confidence_limit_low = col_double(),
+    ##   confidence_limit_high = col_double(),
+    ##   display_order = col_double(),
+    ##   locationid = col_logical()
+    ## )
+
+    ## See spec(...) for full column specifications.
+
+By default, the CDC API limits data to the first 1000 rows. Here I’ve
+increased that by changing an element of the API query. I looked around
+the website describing the API to find the name of the argument, and
+then used the appropriate syntax for GET. To get the full data, I could
+increase this so that I get all the data at once or I could try
+iterating over chunks of a few thousand rows.
+
+  - The
+    “\(limit" parameter chooses how many records to return per page, and "\)offset”
+    tells the API on what record to start returning data.
+  - GET(“<http://google.com/>”, path = “search”, query = list(q =
+    “ham”))
+
+<!-- end list -->
+
+``` r
+brfss_2010 = 
+  GET("https://chronicdata.cdc.gov/resource/acme-vg9e.csv", query = list("$limit"=5000)) %>%
+  content("parsed")
+```
+
+    ## Parsed with column specification:
+    ## cols(
+    ##   .default = col_character(),
+    ##   year = col_double(),
+    ##   sample_size = col_double(),
+    ##   data_value = col_double(),
+    ##   confidence_limit_low = col_double(),
+    ##   confidence_limit_high = col_double(),
+    ##   display_order = col_double(),
+    ##   locationid = col_logical()
+    ## )
+
+    ## See spec(...) for full column specifications.
