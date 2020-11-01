@@ -253,7 +253,7 @@ data_mar
     ## 10 Alabama 18+   2014-2015    9.59
     ## # … with 500 more rows
 
-## NSDUH - factors
+## NSDUH - factors; to plot (by relevel or reorder of category), linear regression etc.
 
 ``` r
 data_mar  %>%
