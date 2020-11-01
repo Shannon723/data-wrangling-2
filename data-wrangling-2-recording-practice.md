@@ -5,8 +5,8 @@ Seonyoung Park (sp3804)
 
 ## Scrap a table
 
-I want the first table from \[this
-<http://samhda.s3-us-gov-west-1.amazonaws.com/s3fs-public/field-uploads/2k15StateFiles/NSDUHsaeShortTermCHG2015.htm>\]
+I want the first table from
+\[here\]<http://samhda.s3-us-gov-west-1.amazonaws.com/s3fs-public/field-uploads/2k15StateFiles/NSDUHsaeShortTermCHG2015.htm>\]
 
 read in the
 html
@@ -56,3 +56,40 @@ table_mar
     ## #   `18-25(P Value)` <chr>, `26+(2013-2014)` <chr>, `26+(2014-2015)` <chr>,
     ## #   `26+(P Value)` <chr>, `18+(2013-2014)` <chr>, `18+(2014-2015)` <chr>,
     ## #   `18+(P Value)` <chr>
+
+## Star Wars Movie Info
+
+I want the data from [here](https://www.imdb.com/list/ls070150896/).
+
+``` r
+url="https://www.imdb.com/list/ls070150896/"
+
+swm_html = read_html(url)
+```
+
+Grab elements that I want- using SelectorGadget 1. Extract each vector
+2. Make a table using all the vectors.
+
+``` r
+title_vec = 
+  swm_html %>%
+  html_nodes(css = ".lister-item-header a") %>%
+  html_text()
+
+gross_rev_vec = 
+  swm_html %>%
+  html_nodes(css = ".text-muted .ghost~ .text-muted+ span") %>%
+  html_text()
+
+runtime_vec = 
+  swm_html %>%
+  html_nodes(css = ".runtime") %>%
+  html_text()
+
+swm_df = 
+  tibble(
+    title = title_vec,
+    gross_rev = gross_rev_vec,
+    runtime = runtime_vec
+  )
+```
