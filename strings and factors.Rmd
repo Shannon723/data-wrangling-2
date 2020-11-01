@@ -1,0 +1,120 @@
+---
+title: "strings and factors"
+author: "Seonyoung Park (sp3804)"
+date: "11/1/2020"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+library(rvest)
+library(p8105.datasets)
+
+scale_color_discrete=scale_color_viridis_d
+sclae_fill_discrete = scale_fill_viridis_d
+
+```
+
+
+## Strings and regex
+
+* str_detect(string, "pattern"); pattern is Case-upper, lower case-specific 
+* str_replace(string, "pattern", "new string")
+
+```{r}
+string_vec = c("my", "name", "is", "jeff")
+
+str_detect(string_vec, "jeff")
+
+str_replace(string_vec, "jeff", "Jeff")
+```
+
+* "^i think" begining of the line
+* "i think$" end of the line
+```{r}
+string_vec = c(
+  "i think we all rule for participating",
+  "i think i have been caught",
+  "i think this will be quite fun actually",
+  "it will be fun, i think"
+  )
+
+str_detect(string_vec, "^i think")
+str_detect(string_vec, "i think$")
+```
+* [Aa]: lower or upper case
+```{r}
+string_vec = c(
+  "Y'all remember Pres. HW Bush?",
+  "I saw a green bush",
+  "BBQ and Bushwalking at Molonglo Gorge",
+  "BUSH -- LIVE IN CONCERT!!"
+  )
+str_detect(string_vec,"bush")
+str_detect(string_vec,"Bush")
+str_detect(string_vec,"[Bb]ush")
+```
+* [0-9][a-zA-Z]: number first followed immediately by letter 
+```{r}
+string_vec = c(
+  '7th inning stretch',
+  '1st half soon to begin. Texas won the toss.',
+  'she is 5 feet 4 inches tall',
+  '3AM - cant sleep :('
+  )
+
+str_detect(string_vec, "^[0-9][a-zA-Z]")
+
+```
+* "."; match with literally anything
+* 7.11= 7x11 (x can be anything)
+* to detect exact 7.11, we have to put "7\\.11"
+```{r}
+string_vec = c(
+  'Its 7:11 in the evening',
+  'want to go to 7-11?',
+  'my flight is AA711',
+  'NetBios: scanning ip 203.167.114.66'
+  )
+
+str_detect(string_vec, "7.11")
+str_detect(string_vec, "7\\.11")
+```
+* detect open bracket
+```{r}
+string_vec = c(
+  'The CI is [2, 5]',
+  ':-]',
+  ':-[',
+  'I found the answer on pages [6-7]'
+  )
+
+str_detect(string_vec, "\\[")
+
+
+```
+
+## Factors
+
+* we can see which one is reference (assumed as "1")
+```{r}
+vec_sex = factor(c("male", "male", "female", "female"))
+vec_sex
+
+as.numeric(vec_sex)
+```
+
+what happens if I relevel...(switch male into reference)
+
+```{r}
+vec_sex = fct_relevel(vec_sex,"male")
+vec_sex
+
+as.numeric(vec_sex)
+
+````
+
+## NSDUH
+
+
+
+
