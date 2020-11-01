@@ -6,25 +6,39 @@ output: github_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(rvest)
+library(httr)
 ```
 
-## R Markdown
+## Scrap a table
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+I want the first table from [this http://samhda.s3-us-gov-west-1.amazonaws.com/s3fs-public/field-uploads/2k15StateFiles/NSDUHsaeShortTermCHG2015.htm]
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+read in the html
 
-```{r cars}
-summary(cars)
+```{r}
+url = "http://samhda.s3-us-gov-west-1.amazonaws.com/s3fs-public/field-uploads/2k15StateFiles/NSDUHsaeShortTermCHG2015.htm"
+drug_use_html = read_html(url)
+
 ```
 
-## Including Plots
+1. extract the table(s); from the website, I've extracted all the tables
+2. I'm gonna focus on the first one
+3. get html table
+4. cut the first row (the “note” at the bottom of the table appears in every column in the first row.)
+5. change it to table
 
-You can also embed plots, for example:
+```{r}
+table_mar = 
+  drug_use_html %>%
+  html_nodes(css = "table") %>%
+  first() %>%
+  html_table %>%
+  slice(-1) %>%
+  as_tibble()
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+table_mar
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
